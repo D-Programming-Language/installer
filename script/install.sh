@@ -192,13 +192,21 @@ GET_PATH_AUTO_INSTALL=0
 GET_PATH_COMPILER=dc
 # Set a default install path depending on the POSIX/Windows environment.
 if posix_terminal; then
-    ROOT=~/dlang
-else
-    # Default to a ROOT that is outside the POSIX-like environment.
-    if [ -z "$USERPROFILE" ]; then
-        fatal '%USERPROFILE% should not be empty on Windows.';
+    if [ -z "$DPATH" ]; then
+        ROOT=~/dlang
+    else
+        ROOT="$DPATH/dlang"
     fi
-    ROOT=$(posix_path "$USERPROFILE")/dlang
+else
+    if [ -z "$DPATH" ]; then
+        # Default to a ROOT that is outside the POSIX-like environment.
+        if [ -z "$USERPROFILE" ]; then
+            fatal '%USERPROFILE% should not be empty on Windows.';
+        fi
+        ROOT=$(posix_path "$USERPROFILE")/dlang
+    else
+        ROOT=$(posix_path "$DPATH")/dlang
+    fi
 fi
 TMP_ROOT=
 DUB_VERSION=

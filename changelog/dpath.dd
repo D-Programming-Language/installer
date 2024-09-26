@@ -1,0 +1,5 @@
+The `install.sh` script now respects the `$DPATH` environment variable
+
+The `$DPATH` environment variable can be set on any system to make the install location of the install.sh script as well as other D related tools like DUB to store their cache files, dependencies, installed compilers, etc.
+
+This way you can change where all the D tools are installed and keep a clean home folder.
