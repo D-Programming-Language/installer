@@ -138,8 +138,12 @@ struct Box
         {
             if (src.startsWith("default:"))
                 src = _tmpdir ~ "/" ~ src[8..$];
+            else if (src.startsWith("'default:"))
+                src = globExpand(_tmpdir, src[9..$-1]);
             if (tgt.startsWith("default:"))
                 tgt = _tmpdir ~ "/" ~ tgt[8..$];
+            else if (tgt.startsWith("'default:"))
+                tgt = globExpand(_tmpdir, tgt[9..$-1]);
 
             string[] srcs = split(src, " ");
             foreach(s; srcs)
@@ -161,6 +165,25 @@ struct Box
     }
 
 private:
+    string globExpand(string basePath, string glob)
+    {
+        string[] paths = [basePath];
+
+        // For each pattern get the directory entries that match the pattern
+        foreach (pattern; glob.split(dirSeparator).filter!(n => n != ""))
+        {
+            string[] matches;
+            foreach (path; paths)
+            {
+                matches ~= dirEntries(path, pattern, SpanMode.shallow)
+                    .map!(n => n.name)
+                    .array;
+            }
+            paths = matches;
+        }
+        return paths.join(" ");
+    }
+
     @property string vagrantFile()
     {
         auto res =
